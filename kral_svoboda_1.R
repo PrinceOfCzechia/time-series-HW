@@ -35,31 +35,50 @@ data_bel_out = data.frame(BEL = bel_out, t = seq_along(bel_out), dummy = as.fact
 decomp = decompose( bel, type = 'additive' )
 plot( decomp )
 
-attach(data_bel_in)
+md0 = lm( BEL ~ 1 + dummy, data = data_bel_in )
+checkresiduals( md0 )
 
-m0 = lm( BEL ~ 1 + dummy )
-checkresiduals( m0 )
+md1 = lm( BEL ~ t + dummy, data = data_bel_in )
+checkresiduals( md1 )
 
-m1 = lm( BEL ~ t + dummy )
-checkresiduals( m1 )
-
-m2 = lm( BEL ~ t + I(t^2) + dummy )
-checkresiduals( m2 )
+md2 = lm( BEL ~ t + I(t^2) + dummy, data = data_bel_in )
+checkresiduals( md2 )
 
 plot( bel_in, lwd = 2 )
-lines( ts(predict(m0), start = start(bel_in), frequency = frequency(bel_in)),
-       col = "yellow", lwd = 2 )
-lines( ts(predict(m1), start = start(bel_in), frequency = frequency(bel_in)),
-       col = "magenta", lwd = 2 )
-lines( ts(predict(m2), start = start(bel_in), frequency = frequency(bel_in)),
-       col = "cyan", lwd = 2 )
+lines( ts(predict(md0), start = start(bel_in), frequency = frequency(bel_in)),
+       col = 'yellow1', lwd = 2 )
+lines( ts(predict(md1), start = start(bel_in), frequency = frequency(bel_in)),
+       col = 'magenta', lwd = 2 )
+lines( ts(predict(md2), start = start(bel_in), frequency = frequency(bel_in)),
+       col = 'cyan', lwd = 2 )
 
 # compare BIC and adjusted R^2
-c( BIC(m0), BIC(m1), BIC(m2) )
-c( summary(m0)$r.squared, summary(m1)$r.squared, summary(m2)$r.squared )
-# both metrics prefer m2
+c( BIC(md0), BIC(md1), BIC(md2) )
+c( summary(md0)$r.squared, summary(md1)$r.squared, summary(md2)$r.squared )
+# both metrics prefer md2
+
 
 ###
 # 2) TRIGONOMETRIC SEASONALITY
 ###
 
+mt1 = lm( BEL ~ t +
+           I(sin(2*pi*t/12)) + I(cos(2*pi*t/12)) +
+           I(sin(4*pi*t/12)) + I(cos(4*pi*t/12)) +
+           I(sin(6*pi*t/12)) + I(cos(6*pi*t/12)) +
+           I(sin(8*pi*t/12)) + I(cos(8*pi*t/12)) +
+           I(sin(10*pi*t/12)) + I(cos(10*pi*t/12)) +
+           I(sin(12*pi*t/12)) + I(cos(12*pi*t/12)), data = data_bel_in )
+mt2 = lm( BEL ~ t + I(t^2) +
+            I(sin(2*pi*t/12)) + I(cos(2*pi*t/12)) +
+            I(sin(4*pi*t/12)) + I(cos(4*pi*t/12)) +
+            I(sin(6*pi*t/12)) + I(cos(6*pi*t/12)) +
+            I(sin(8*pi*t/12)) + I(cos(8*pi*t/12)) +
+            I(sin(10*pi*t/12)) + I(cos(10*pi*t/12)) +
+            I(sin(12*pi*t/12)) + I(cos(12*pi*t/12)), data = data_bel_in )
+BIC(mt)
+plot( bel_in, lwd = 2 )
+lines( ts(predict(mt1), start = start(bel_in), frequency = frequency(bel_in)),
+       col = 'magenta', lwd = 2 )
+lines( ts(predict(mt2), start = start(bel_in), frequency = frequency(bel_in)),
+       col = 'cyan', lwd = 2 )

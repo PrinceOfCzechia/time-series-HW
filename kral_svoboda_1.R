@@ -76,9 +76,30 @@ mt2 = lm( BEL ~ t + I(t^2) +
             I(sin(8*pi*t/12)) + I(cos(8*pi*t/12)) +
             I(sin(10*pi*t/12)) + I(cos(10*pi*t/12)) +
             I(sin(12*pi*t/12)) + I(cos(12*pi*t/12)), data = data_bel_in )
-BIC(mt)
+
 plot( bel_in, lwd = 2 )
 lines( ts(predict(mt1), start = start(bel_in), frequency = frequency(bel_in)),
        col = 'magenta', lwd = 2 )
 lines( ts(predict(mt2), start = start(bel_in), frequency = frequency(bel_in)),
        col = 'cyan', lwd = 2 )
+
+c( BIC(mt1), BIC(mt2) )
+c( summary(mt1)$r.squared, summary(mt2)$r.squared )
+# quadratic model still preferable
+# improvement in 4th decimal place compared to dummy models
+
+###
+# 3) ETS model
+###
+
+
+
+###
+# 4) BATS model
+###
+
+
+
+###
+# 5) TBATS model
+###

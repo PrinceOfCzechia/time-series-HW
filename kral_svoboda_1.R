@@ -17,7 +17,7 @@ rm(list=ls())
 
 data = read_xlsx( 'C:/Users/Kral/Documents/MFF/casove_rady/une_rt_m.xlsx',
                   sheet = 'Sheet 1' )
-numeric_at = as.numeric( data[33,] )
+numeric_at = as.numeric( data[33,] ) # ignore the warnings, it is fine
 data_at = na.omit( numeric_at )
 
 at = ts( data = data_at, frequency = 12, start = c(1994,1) )
@@ -116,9 +116,9 @@ lines( ts(predict(mt1), start = start(at_in), frequency = frequency(at_in)),
 lines( ts(predict(mt2), start = start(at_in), frequency = frequency(at_in)),
        col = 'cyan', lwd = 2 )
 lines( ts(predict(mt3), start = start(at_in), frequency = frequency(at_in)),
-       col = 'deeppink1', lwd = 2 )
+       col = 'deeppink', lwd = 2 )
 legend('topleft', legend = c('data', 'linear', 'quadratic', 'cubic'),
-       col = c('black', 'blueviolet', 'deeppink', 'cyan'),
+       col = c('black', 'blueviolet', 'cyan', 'deeppink'),
        lty = c(1,1,1,1), lwd = c(2,2,2,2))
 
 c( BIC(mt1), BIC(mt2), BIC(mt3) )
@@ -131,6 +131,8 @@ c( summary(mt1)$adj.r.squared, summary(mt2)$adj.r.squared, summary(mt3)$adj.r.sq
 
 mETS = ets( at_in, model = 'ZZZ', opt.crit = 'lik', ic = 'bic' )
 checkresiduals( mETS )
+
+plot(mETS)
 
 plot( at_in, lwd = 2 )
 lines( mETS$fitted, col = 'red', lwd = 2)
@@ -154,14 +156,6 @@ qqline( residuals(mBATS), col = 'red', lwd = 2 )
 plot( at_in, lwd = 2 )
 lines( mBATS$fitted, col = 'red', lwd = 2 )
 
-plot( mBATS_forecast, ylab = 'Unemployment', xlab = 'Time',
-      main = 'Fit and forecast of the BATS model' )
-lines( at_full, col = 'black', lwd = 2 )
-lines( mBATS$fitted, col = 'red', lwd = 2 )
-lines( mBATS_forecast$mean, lwd = 2, col = 'cyan2' )
-legend( 'topleft', legend = c('data', 'fitted', 'prediction'),
-        col = c('black', 'red', 'cyan2'), lty = c(1,1,1), lwd = c(2,2,2) )
-
 
 ###
 # 5) TBATS model
@@ -179,14 +173,6 @@ qqline( residuals(mTBATS), col = 'red', lwd = 2 )
 
 plot( at_in, lwd = 2 )
 lines( mTBATS$fitted, col = 'red', lwd = 2 )
-
-plot( mTBATS_forecast, ylab = 'Unemployment', xlab = 'Time',
-      main = 'Fit and forecast of the TBATS model' )
-lines( at_full, col = 'black', lwd = 2 )
-lines( mTBATS$fitted, col = 'red', lwd = 2 )
-lines( mTBATS_forecast$mean, lwd = 2, col = 'cyan2' )
-legend( 'topleft', legend = c('data', 'fitted', 'prediction'),
-        col = c('black', 'red', 'cyan2'), lty = c(1,1,1), lwd = c(2,2,2) )
 
 
 ###
@@ -206,6 +192,30 @@ lines( mTBATS$fitted, col = 'goldenrod', lwd = 2 )
 mETS_forecast = forecast( mETS, h = 12 )
 mBATS_forecast = forecast( mBATS, h = 12 )
 mTBATS_forecast = forecast( mTBATS, h = 12 )
+
+plot( mETS_forecast, ylab = 'Unemployment', xlab = 'Time',
+      main = 'Fit and forecast of the ETS model' )
+lines( at_full, col = 'black', lwd = 2 )
+lines( mETS$fitted, col = 'red', lwd = 2 )
+lines( mETS_forecast$mean, lwd = 2, col = 'cyan2' )
+legend( 'topleft', legend = c('data', 'fitted', 'prediction'),
+        col = c('black', 'red', 'cyan2'), lty = c(1,1,1), lwd = c(2,2,2) )
+
+plot( mBATS_forecast, ylab = 'Unemployment', xlab = 'Time',
+      main = 'Fit and forecast of the BATS model' )
+lines( at_full, col = 'black', lwd = 2 )
+lines( mBATS$fitted, col = 'red', lwd = 2 )
+lines( mBATS_forecast$mean, lwd = 2, col = 'cyan2' )
+legend( 'topleft', legend = c('data', 'fitted', 'prediction'),
+        col = c('black', 'red', 'cyan2'), lty = c(1,1,1), lwd = c(2,2,2) )
+
+plot( mTBATS_forecast, ylab = 'Unemployment', xlab = 'Time',
+      main = 'Fit and forecast of the TBATS model' )
+lines( at_full, col = 'black', lwd = 2 )
+lines( mTBATS$fitted, col = 'red', lwd = 2 )
+lines( mTBATS_forecast$mean, lwd = 2, col = 'cyan2' )
+legend( 'topleft', legend = c('data', 'fitted', 'prediction'),
+        col = c('black', 'red', 'cyan2'), lty = c(1,1,1), lwd = c(2,2,2) )
 
 plot( ts(at_out), lwd = 2, ylim = c(130, 330), ylab = 'Unemployment',
       main = 'Comparison of predictions by the ETS, BATS ans TBATS models',

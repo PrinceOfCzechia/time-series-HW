@@ -145,6 +145,7 @@ mBATS = bats( at_in )
 checkresiduals( mBATS )
 acf( residuals(mBATS), main = 'Correlogram of the BATS model' )
 
+plot(mBATS)
 mBATS
 qqnorm( residuals(mBATS),
         main = 'Normal QQ plot of residuals of the TBATS model' )
@@ -170,6 +171,7 @@ mTBATS = tbats( at_in )
 checkresiduals( mTBATS )
 acf( residuals(mTBATS), main = 'Correlogram of the TBATS model' )
 
+plot(mTBATS)
 mTBATS
 qqnorm( residuals(mTBATS),
         main = 'Normal QQ plot of residuals of the TBATS model' )

@@ -48,9 +48,9 @@ checkresiduals(ms)
 # plot fit
 plot( at_in, lwd = 2, ylab = 'Unemployment',
       main = 'SARIMA(1,0,1)x(2,0,0)[12] model fit' )
-lines( ms$fitted, col = 'blueviolet', lwd = 2 )
+lines( ms$fitted, col = 'darkorange', lwd = 2 )
 legend( 'topleft', legend = c('data', 'SARIMA'),
-        col = c('black', 'blueviolet'),
+        col = c('black', 'darkorange'),
         lty = c(1,1), lwd = c(2,2) )
 
 # prediction
@@ -58,9 +58,9 @@ ms_forecast = forecast( ms, h = 12 )
 plot( ts(at_out), lwd = 2, ylim = c(80, 330), ylab = 'Unemployment',
       main = 'Prediction of the SARIMA(1,0,1)x(2,0,0)[12] model',
       xlab = 'Month of 2023')
-lines( ts(ms_forecast$mean), lwd = 2, col = 'blueviolet' )
-lines( ts(ms_forecast$lower[,2]), lwd = 2, col = 'blueviolet', lty = 2 )
-lines( ts(ms_forecast$upper[,2]), lwd = 2, col = 'blueviolet', lty = 2 )
+lines( ts(ms_forecast$mean), lwd = 2, col = 'darkorange' )
+lines( ts(ms_forecast$lower[,2]), lwd = 2, col = 'darkorange', lty = 2 )
+lines( ts(ms_forecast$upper[,2]), lwd = 2, col = 'darkorange', lty = 2 )
 legend( 'topleft', legend = c('data', 'SARIMA'),
-        col = c('black', 'blueviolet'),
+        col = c('black', 'darkorange'),
         lty = c(1,1), lwd = c(2,2) )

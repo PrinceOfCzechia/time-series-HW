@@ -3,8 +3,6 @@ rm(list = ls())
 library(tseries)
 library(forecast)
 library(rugarch)
-library(lmtest)
-library(car)
 
 ###
 # init procedures
@@ -13,18 +11,25 @@ library(car)
 # loading the raw data
 data = read.csv('TSM.csv', stringsAsFactors = TRUE)
 tsm = ts(data$Adj.Close)
-plot(data$Date, tsm, type='l')
+data$Date = as.Date(data$Date)
+plot(data$Date, tsm, type='l', ylab='$TSM adjusted closing price',
+     main = 'Daily closing price of $TSM adjusted for dividends', grid = TRUE)
+grid()
+axis.Date(1, at=seq(as.Date("2017-01-01"), as.Date("2024-03-28"), by="years"), format="%Y")
 
 # log-returns series
 lr = diff(log(tsm))
-plot(data$Date[-1], lr, type='l') # we can observe typical behavior of financial series
+plot(data$Date[-1], lr, type='l', ylab = 'log-returns of $TSM',
+     xlab = 'Time', main = 'Daily log returns of $TSM adjsuted for dividends') # we can observe typical behavior of financial series
+grid()
+axis.Date(1, at=seq(as.Date("2017-01-01"), as.Date("2024-03-28"), by="years"), format="%Y")
 acf(lr) # looks fine
 
 
 ###
 # ARIMA model
 ###
-m_arima = auto.arima(lr, allowmean = TRUE)
+m_arima = auto.arima(lr, allowmean = FALSE)
 summary(m_arima) # we will use ARMA(2,2) as the mean structure
 checkresiduals(m_arima) # uncorrelated with p=0.4, heteroscedastic, slightly leptocurtic
 Box.test(m_arima$residuals^2, type='Ljung-Box') # heteroscedastic with p~0 => GARCH
@@ -52,12 +57,12 @@ benchmark_AIC = infocriteria(mg1)[1]
 # searching for a better sGARCH model
 ###
 best_model = mg1
-for (p in 1:5)
+for (m in 1:5)
 {
-  for (q in 1:5)
+  for (s in 1:5)
   {
     mg2_spec = ugarchspec(variance.model = list(model = 'sGARCH',
-                                                 garchOrder = c(p, q),
+                                                 garchOrder = c(m, s),
                                                  submodel = NULL,
                                                  external.regressors = NULL,
                                                  variance.targeting = FALSE),
@@ -87,12 +92,12 @@ print(best_model)
 # extension to gjrGARCH
 ###
 best_model = mg2
-for (p in 1:5)
+for (m in 1:5)
 {
-  for (q in 1:5)
+  for (s in 1:5)
   {
     gjr_spec = ugarchspec(variance.model = list(model = 'gjrGARCH',
-                                                garchOrder = c(p, q),
+                                                garchOrder = c(m, s),
                                                 submodel = NULL,
                                                 external.regressors = NULL,
                                                 variance.targeting = FALSE),
@@ -116,3 +121,6 @@ for (p in 1:5)
 # gjrGARCH(2,4) improved to AIC = -5.1495
 benchmark_AIC
 print(best_model)
+
+gjr = best_model
+plot(gjr)

@@ -64,7 +64,7 @@ for (p in 1:5)
                           mean.model = list(armaOrder = c(2, 2),
                                              include.mean = FALSE,
                                              external.regressors = NULL),
-                          distribution.model = 'std', # t
+                          distribution.model = 'std',
                           start.pars = list(),
                           fixed.pars = list())
 
@@ -78,7 +78,41 @@ for (p in 1:5)
     }
   }
 }
+# sGARCH(2,4) emerged victorious with AIC = -5.1488
+benchmark_AIC
+print(best_model)
 
-# sGARCH(2,4) emerged victorious
+
+###
+# extension to gjrGARCH
+###
+best_model = mg2
+for (p in 1:5)
+{
+  for (q in 1:5)
+  {
+    gjr_spec = ugarchspec(variance.model = list(model = 'gjrGARCH',
+                                                garchOrder = c(p, q),
+                                                submodel = NULL,
+                                                external.regressors = NULL,
+                                                variance.targeting = FALSE),
+                          mean.model = list(armaOrder = c(2, 2),
+                                            include.mean = FALSE,
+                                            external.regressors = NULL),
+                          distribution.model = 'std',
+                          start.pars = list(),
+                          fixed.pars = list())
+    
+    gjr = ugarchfit(spec = gjr_spec, data = lr)
+    aic = infocriteria(gjr)[1]
+    
+    if (aic < benchmark_AIC)
+    {
+      benchmark_AIC = aic
+      best_model = gjr
+    }
+  }
+}
+# gjrGARCH(2,4) improved to AIC = -5.1495
 benchmark_AIC
 print(best_model)

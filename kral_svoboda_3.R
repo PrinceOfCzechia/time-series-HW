@@ -167,21 +167,21 @@ Box.test(gjr_res^2, type='Ljung-Box') # homoscedasticity not rejected
 ###
 
 # sGARCH(1,1)
-mg1_pred = ugarchboot(mg1, method='Full', n.ahead=5, n.bootpred=1000, n.bootfit=1000)
+mg1_pred = ugarchboot(mg1, method='Partial', n.ahead=5, n.bootpred=1000, n.bootfit=1000)
 print(mg1_pred)
 
 plot(mg1_pred, which = 2) # expected returns
 plot(mg1_pred, which = 3) # expected sigma
 
 # sGARCH(2,4)
-mg2_pred = ugarchboot(mg2, method='Full', n.ahead=5, n.bootpred=1000, n.bootfit=1000)
+mg2_pred = ugarchboot(mg2, method='Partial', n.ahead=5, n.bootpred=1000, n.bootfit=1000)
 print(mg2_pred)
 
 plot(mg2_pred, which = 2) # expected returns
 plot(mg2_pred, which = 3) # expected sigma
 
 # gjrGARCH(2,4)
-gjr_pred = ugarchboot(gjr, method='Full', n.ahead=5, n.bootpred=1000, n.bootfit=1000)
+gjr_pred = ugarchboot(gjr, method='Partial', n.ahead=5, n.bootpred=1000, n.bootfit=1000)
 print(gjr_pred)
 
 plot(gjr_pred, which = 2) # expected returns
@@ -208,3 +208,12 @@ plot(mg1_pred, which = 3)
 plot(mg2_pred, which = 3)
 plot(gjr_pred, which = 3)
 par(mfrow=c(1,1))
+
+# stock price prediction
+last = tail(tsm, 1)[1]
+p1 = last*exp(0.0016)
+p2 = p1*exp(-0.0011)
+p3 = p2*exp(0.0009)
+p4 = p3*exp(-0.0008)
+p5 = p4*exp(0.0007)
+cat(c(p1,p2,p3,p4,p5))
